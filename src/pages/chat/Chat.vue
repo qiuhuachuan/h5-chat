@@ -27,22 +27,21 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-// .chat-wrapper {
-//   position: relative;
-//   .header {
-//     height: 40px;
-//   }
-//   .content {
-//     height: 100%;
-//   }
-//   .footer {
-//     // margin-top: auto;
-//     position: fixed;
-//     bottom: 10px;
-//     left: 0;
-//     right: 0;
-//     height: 100px;
-//     z-index: 1000;
-//   }
-// }
+.chat-wrapper {
+  .header {
+    height: 40px;
+  }
+  .content {
+    flex: 1;
+  }
+  .footer {
+    margin-top: auto;
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    height: 100px;
+    z-index: 1000;
+  }
+}
 </style>
