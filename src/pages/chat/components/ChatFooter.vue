@@ -39,27 +39,21 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .chat-footer-outer {
-	// margin-top: auto;
-	z-index: 999;
-  position: fixed;
-  bottom: 10px;
-  left: 0;
-  right: 0;
 	.chat-footer-inner {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		.client-input {
-			flex-basis: 1;
+			flex: 1;
 			margin: 5px;
 			border-radius: 22px;
-			max-height: 80px;
-			overflow-y: visible;
+			max-height: 100px;
+			overflow-y: auto;
 		}
 		.client-button {
 			font-size: 14px;
 			color: #000;
-			width: 100px;
+			width: 80px;
 			margin: 5px;
 			background-color: #eebf52;
 		}

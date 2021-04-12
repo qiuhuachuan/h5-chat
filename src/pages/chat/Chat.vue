@@ -28,20 +28,22 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .chat-wrapper {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   .header {
     height: 40px;
   }
   .content {
     flex: 1;
+    overflow-y: hidden;
   }
   .footer {
-    margin-top: auto;
-    position: fixed;
-    bottom: 10px;
+    width: 100%;
+    bottom: 0;
     left: 0;
     right: 0;
-    height: 100px;
-    z-index: 1000;
+    background-color: #eee;
   }
 }
 </style>
