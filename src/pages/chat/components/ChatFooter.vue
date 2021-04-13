@@ -11,13 +11,14 @@
 				input-align="left"
 				maxlength="400"
 			/>
-			<VantButton text="发送" round class="client-button"></VantButton>
+			<VantButton text="发送" round class="client-button" @click="submitClientResponse"></VantButton>
 		</div>
 	</div>
 </template>
 
 <script>
 import { defineComponent, ref } from 'vue'
+import { useStore } from 'vuex'
 import VantField from 'vant/lib/field'
 import VantButton from 'vant/lib/button'
 
@@ -28,10 +29,20 @@ export default defineComponent({
 		VantButton
 	},
 	setup() {
+		const store = useStore()
 		const message = ref('')
 
+		const submitClientResponse = () => {
+			const data = {
+				owner: 'client',
+				content: message.value
+			}
+			store.state.history.push(data)
+			message.value = ''
+		}
 		return {
-			message
+			message,
+			submitClientResponse
 		}
 	}
 })

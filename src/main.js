@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-
+import store from './store/index.js'
 import 'vant/lib/index.css'
 
 
@@ -8,4 +8,4 @@ import 'vant/lib/index.css'
 import './assets/style/reset.css'
 
 
-createApp(App).mount('#app')
+createApp(App).use(store).mount('#app')

@@ -20,6 +20,7 @@
             input-align="left"
             required
             maxlength="25"
+            :disabled="afterSubmit"
           />
           <VantField
               v-model="state.description"
@@ -30,15 +31,16 @@
               input-align="left"
               required
               maxlength="400"
+              :disabled="afterSubmit"
             />
           <div style="margin-top: 5px; width: auto;">
-            <VantButton round block type="primary" @click="onSubmit(state)">
+            <VantButton round block type="primary" @click="submitChiefProblem(state)">
               提交
             </VantButton>
           </div>
         </div>
       </div>
-      <div :class="item.owner" v-for="item of history" :key="item.id">
+      <div :class="item.owner" v-for="item of store.state.history" :key="item.id">
         <img :src="item.owner == 'chatbot' ? chatbotAvatar : clientAvatar">
         <div :class="item.owner == 'chatbot' ? 'chatbot-content' : 'client-content'">
           <div class="details">{{ item.question || item.content }}</div>
@@ -49,7 +51,9 @@
 </template>
 
 <script>
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, reactive, ref } from 'vue'
+import { useStore } from 'vuex'
+import axios from 'axios'
 import VantField from 'vant/lib/field'
 import VantButton from 'vant/lib/button'
 export default defineComponent({
@@ -59,47 +63,41 @@ export default defineComponent({
 		VantButton
 	},
 	setup() {
-    const history = reactive([
-      {
-        id: 1,
-        question: '你理想爱情是什么样子的？',
-        owner: 'chatbot'
-      },
-      {
-        id: 2,
-        content: '一屋二人三餐四季',
-        owner: 'client'
-      }
-    ])
+    const store = useStore()
+
 		const state = reactive({
 			problem: '',
 			description: ''
 		})
-		const messages = reactive({
-			contents: [
-				{
-					content: 'hello',
-					owner: 'chatbot'
-				},
-				{
-					content: 'hi',
-					owner: 'client'
-				}
-			]
-		})
+    const afterSubmit = ref(false)
+		
 		const chatbotAvatar = 'images/1.png'
 		const clientAvatar = 'images/2.png'
-		const onSubmit = (state) => {
+    // 提交主诉问题
+		const submitChiefProblem = (state) => {
 			console.log(state)
+      // axios.post('0.0.0.0', state).then(
+      //   res => {
+      //     console.log(res.data)
+      //     history.push(res.data)
+      //   }
+      // )
+      axios.get('public/mock/firstQuestion.json').then(
+        res => {
+          console.log(res.data)
+          afterSubmit.value = true
+          store.state.history.push(res.data)
+        }
+      )
 		}
 
 		return {
+      store,
 			state,
-			messages,
+      afterSubmit,
 			chatbotAvatar,
 			clientAvatar,
-			onSubmit,
-      history
+			submitChiefProblem
 		}
 	}
 })
@@ -178,7 +176,7 @@ export default defineComponent({
           font-size: 14px;
           text-align: right;
           flex: 1;
-          background-color: #fff;
+          background-color: #59b269;
           border-top-left-radius: 16px;
           border-bottom-left-radius: 16px;
           border-bottom-right-radius: 16px;
