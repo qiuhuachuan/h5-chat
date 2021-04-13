@@ -3,7 +3,7 @@
     <div class="chat-container">
       <div class="chatbot">
         <img :src="chatbotAvatar">
-        <div class="form-table">
+        <div class="chatbot-content">
           <div class="details">
 参与“预咨询”，你可以获得什么？<br />
   • 如果你当前正在遭遇令你毫无头绪的困境，“预咨询”可以帮助你理清目前的困扰；<br />
@@ -38,27 +38,10 @@
           </div>
         </div>
       </div>
-      <div class="client">
-        <img :src="clientAvatar">
-        <div class="client-content">
-          <div>Hi</div>
-          <div>I am glad to talk to you.</div>
-          <div>Hi</div>
-          <div>I am glad to talk to you.</div>
-          <div>Hi</div>
-          <div>I am glad to talk to you.</div>
-          <div>Hi</div>
-          <div>I am glad to talk to you.</div>
-          <div>Hi</div>
-          <div>I am glad to talk to you.</div>
-          <div>Hi</div>
-          <div>I am glad to talk to you.</div>
-          <div>Hi</div>
-          <div>I am glad to talk to you.</div>
-          <div>Hi</div>
-          <div>I am glad to talk to you.</div>
-          <div>Hi</div>
-          <div>I am glad to talk to you.</div>
+      <div :class="item.owner" v-for="item of history" :key="item.id">
+        <img :src="item.owner == 'chatbot' ? chatbotAvatar : clientAvatar">
+        <div :class="item.owner == 'chatbot' ? 'chatbot-content' : 'client-content'">
+          <div class="details">{{ item.question || item.content }}</div>
         </div>
       </div>
     </div>
@@ -76,6 +59,18 @@ export default defineComponent({
 		VantButton
 	},
 	setup() {
+    const history = reactive([
+      {
+        id: 1,
+        question: '你理想爱情是什么样子的？',
+        owner: 'chatbot'
+      },
+      {
+        id: 2,
+        content: '一屋二人三餐四季',
+        owner: 'client'
+      }
+    ])
 		const state = reactive({
 			problem: '',
 			description: ''
@@ -103,7 +98,8 @@ export default defineComponent({
 			messages,
 			chatbotAvatar,
 			clientAvatar,
-			onSubmit
+			onSubmit,
+      history
 		}
 	}
 })
@@ -127,7 +123,7 @@ export default defineComponent({
         height: 40px;
         border-radius: 20px;
       }
-      .form-table {
+      .chatbot-content {
         display: flex;
         flex-direction: column;
         flex-grow: 1;
