@@ -11,7 +11,7 @@
 				input-align="left"
 				maxlength="400"
 			/>
-			<VantButton text="发送" round class="client-button" @click="submitClientResponse"></VantButton>
+			<VantButton text="发送" round class="client-button" @click="submitClientResponse" :disabled="store.state.sendIsAvailable"></VantButton>
 		</div>
 	</div>
 </template>
@@ -21,6 +21,7 @@ import { defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import VantField from 'vant/lib/field'
 import VantButton from 'vant/lib/button'
+import axios from 'axios'
 
 export default defineComponent({
 	name: 'ChatFooter',
@@ -37,10 +38,25 @@ export default defineComponent({
 				owner: 'client',
 				content: message.value
 			}
-			store.state.history.push(data)
-			message.value = ''
+			const dataToBeSended = {
+				status: store.state.status,
+				username: store.state.username,
+				context: message.value,
+				counter: store.state.counter
+			}
+			axios.post('http://172.16.75.126:8000/send-message', dataToBeSended).then(
+				res => {
+					console.log(res.data)
+					store.state.history.push(data)
+					message.value = ''
+					store.state.history.push(res.data)
+					store.state.counter += 1
+				}
+			)
+			
 		}
 		return {
+			store,
 			message,
 			submitClientResponse
 		}

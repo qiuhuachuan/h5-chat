@@ -12,8 +12,8 @@
   • 如果想通过心理咨询帮助自己，但不知从何开始，“预咨询”结束后，可以为你推荐具备专业资质的心理咨询资源。
           </div>
           <VantField
-            v-model="state.problem"
-            class="text-problem"
+            v-model="state.title"
+            class="text-title"
             rows="1"
             type="textarea"
             placeholder="请用一句话描述你的问题（8~25字），必填"
@@ -23,8 +23,8 @@
             :disabled="afterSubmit"
           />
           <VantField
-              v-model="state.description"
-              class="text-description"
+              v-model="state.content"
+              class="text-content"
               rows="1"
               type="textarea"
               placeholder="请详细描述问题(40~400字)，建议：【年龄-性别】【大致经过】【内心感受】【持续时间】"
@@ -44,7 +44,13 @@
         <img :src="item.owner == 'chatbot' ? chatbotAvatar : clientAvatar">
         <div :class="item.owner == 'chatbot' ? 'chatbot-content' : 'client-content'">
           <div class="details">{{ item.question || item.content }}</div>
+          <div v-if="item.childProblems">
+          <VantRadioGroup v-model="radioChecked">
+            <VantRadio v-for="element of item.childProblems" :name="element.key" :key="element.key" @click="selectChildProblem(element.key)">{{ element.value }}</VantRadio>
+          </VantRadioGroup>
         </div>
+        </div>
+        
       </div>
     </div>
   </div>
@@ -56,19 +62,23 @@ import { useStore } from 'vuex'
 import axios from 'axios'
 import VantField from 'vant/lib/field'
 import VantButton from 'vant/lib/button'
+import { RadioGroup as VantRadioGroup, Radio as VantRadio} from 'vant'
 export default defineComponent({
 	name: 'ChatContent',
 	components: {
 		VantField,
-		VantButton
+		VantButton,
+    VantRadioGroup,
+    VantRadio
 	},
 	setup() {
     const store = useStore()
 
 		const state = reactive({
-			problem: '',
-			description: ''
+			title: '',
+			content: ''
 		})
+    const radioChecked = ref('')
     const afterSubmit = ref(false)
 		
 		const chatbotAvatar = 'images/1.png'
@@ -76,28 +86,52 @@ export default defineComponent({
     // 提交主诉问题
 		const submitChiefProblem = (state) => {
 			console.log(state)
-      // axios.post('0.0.0.0', state).then(
-      //   res => {
-      //     console.log(res.data)
-      //     history.push(res.data)
-      //   }
-      // )
-      axios.get('public/mock/firstQuestion.json').then(
+      axios.post('http://172.16.75.126:8000/first-question', state).then(
         res => {
-          console.log(res.data)
           afterSubmit.value = true
+          console.log(res.data)
           store.state.history.push(res.data)
+          store.state.predictLabel = res.data.predictLabel
+          store.state.labelName = res.data.labelName
         }
       )
+      // 本地模拟
+      // axios.get('public/mock/firstQuestion.json').then(
+      //   res => {
+      //     console.log(res.data)
+      //     afterSubmit.value = true
+      //     store.state.history.push(res.data)
+      //   }
+      // )
 		}
+
+    const selectChildProblem = key => {
+      const dataToBeSended = {
+        pred_label: store.state.predictLabel,
+        child_problem_index: key,
+        username: store.state.username,
+        context: state.title + state.content,
+        label_name: store.state.labelName
+      }
+      console.log(dataToBeSended)
+      axios.post('http://172.16.75.126:8000/select-child-problem', dataToBeSended).then(
+        res => {
+          console.log(res.data)
+          store.state.history.push(res.data)
+          store.state.sendIsAvailable = false
+        }
+      )
+    }
 
 		return {
       store,
 			state,
+      radioChecked,
       afterSubmit,
 			chatbotAvatar,
 			clientAvatar,
-			submitChiefProblem
+			submitChiefProblem,
+      selectChildProblem
 		}
 	}
 })
@@ -126,6 +160,7 @@ export default defineComponent({
         flex-direction: column;
         flex-grow: 1;
         .details {
+          max-width: 260px;
           margin: 5px;
           margin-right: auto;
           white-space: pre-wrap;
@@ -139,14 +174,14 @@ export default defineComponent({
           border-bottom-left-radius: 16px;
           border-bottom-right-radius: 16px;
         }
-        .text-problem {
+        .text-title {
           margin: 5px;
           border-top-right-radius: 16px;
           border-bottom-left-radius: 16px;
           border-bottom-right-radius: 16px;
           max-height: 60px;
         }
-        .text-description {
+        .text-content {
           margin: 5px;
           border-top-right-radius: 16px;
           border-bottom-left-radius: 16px;
@@ -168,13 +203,14 @@ export default defineComponent({
         display: inline-flex;
         flex-flow: column wrap;
         div {
+          max-width: 250px;
           margin: 5px;
           margin-left: auto;
           white-space: pre-wrap;
           word-break: break-all;
           padding: 12px;
           font-size: 14px;
-          text-align: right;
+          text-align: left;
           flex: 1;
           background-color: #59b269;
           border-top-left-radius: 16px;
