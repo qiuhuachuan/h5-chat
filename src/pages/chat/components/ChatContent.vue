@@ -1,5 +1,5 @@
 <template>
-	<div class="chat-content">
+	<div class="chat-content" id="scrollWindow">
     <div class="chat-container">
       <div class="chatbot">
         <img :src="chatbotAvatar">
@@ -16,10 +16,10 @@
             class="text-title"
             rows="1"
             type="textarea"
-            placeholder="请用一句话描述你的问题（8~25字），必填"
+            placeholder="请用一句话描述你的问题（8~40字），必填"
             input-align="left"
             required
-            maxlength="25"
+            maxlength="40"
             :disabled="afterSubmit"
           />
           <VantField
@@ -34,7 +34,7 @@
               :disabled="afterSubmit"
             />
           <div style="margin-top: 5px; width: auto;">
-            <VantButton round block type="primary" @click="submitChiefProblem(state)">
+            <VantButton round block type="primary" @click.once="submitChiefProblem(state)">
               提交
             </VantButton>
           </div>
@@ -44,9 +44,9 @@
         <img :src="item.owner == 'chatbot' ? chatbotAvatar : clientAvatar">
         <div :class="item.owner == 'chatbot' ? 'chatbot-content' : 'client-content'">
           <div class="details">{{ item.question || item.content }}</div>
-          <div v-if="item.childProblems">
-          <VantRadioGroup v-model="radioChecked">
-            <VantRadio v-for="element of item.childProblems" :name="element.key" :key="element.key" @click="selectChildProblem(element.key)">{{ element.value }}</VantRadio>
+          <div v-if="item.options instanceof Object ? true : false">
+          <VantRadioGroup v-model="radioChecked" :disabled="item.isSelected" @click.once="selectOption(radioChecked, item)">
+            <VantRadio v-for="element of item.options" :name="element.key" :key="element.key" >{{ element.value }}</VantRadio>
           </VantRadioGroup>
         </div>
         </div>
@@ -86,7 +86,7 @@ export default defineComponent({
     // 提交主诉问题
 		const submitChiefProblem = (state) => {
 			console.log(state)
-      axios.post('http://172.16.75.126:8000/first-question', state).then(
+      axios.post('http://172.16.75.144:8000/first-question', state).then(
         res => {
           afterSubmit.value = true
           console.log(res.data)
@@ -95,30 +95,32 @@ export default defineComponent({
           store.state.labelName = res.data.labelName
         }
       )
-      // 本地模拟
-      // axios.get('public/mock/firstQuestion.json').then(
-      //   res => {
-      //     console.log(res.data)
-      //     afterSubmit.value = true
-      //     store.state.history.push(res.data)
-      //   }
-      // )
 		}
 
-    const selectChildProblem = key => {
+    const selectOption = (key, item) => {
       const dataToBeSended = {
-        pred_label: store.state.predictLabel,
-        child_problem_index: key,
         username: store.state.username,
         context: state.title + state.content,
+        status: store.state.status,
+        counter: store.state.counter,
+        pred_label: store.state.predictLabel,
+        child_problem_index: key,
         label_name: store.state.labelName
       }
       console.log(dataToBeSended)
-      axios.post('http://172.16.75.126:8000/select-child-problem', dataToBeSended).then(
+      axios.post('http://172.16.75.144:8000/send-message', dataToBeSended).then(
         res => {
           console.log(res.data)
           store.state.history.push(res.data)
-          store.state.sendIsAvailable = false
+          store.state.counter += 1
+          item.isSelected = true
+          store.state.status = res.data.next_status
+          if (res.data.next_status == 'typing') {
+            store.state.sendIsAvailable = false
+          }
+          if (typeof(res.data.options) == 'string') {
+            store.state.selectedOption = res.data.options
+          }
         }
       )
     }
@@ -131,7 +133,7 @@ export default defineComponent({
 			chatbotAvatar,
 			clientAvatar,
 			submitChiefProblem,
-      selectChildProblem
+      selectOption
 		}
 	}
 })

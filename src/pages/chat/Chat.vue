@@ -36,7 +36,7 @@ export default defineComponent({
   }
   .content {
     flex: 1;
-    overflow-y: hidden;
+    overflow-y: auto;
   }
   .footer {
     width: 100%;

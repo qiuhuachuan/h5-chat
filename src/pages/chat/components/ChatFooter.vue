@@ -11,7 +11,7 @@
 				input-align="left"
 				maxlength="400"
 			/>
-			<VantButton text="发送" round class="client-button" @click="submitClientResponse" :disabled="store.state.sendIsAvailable"></VantButton>
+			<VantButton text="发送" round class="client-button" @click="sendClientResponse" :disabled="store.state.sendIsAvailable"></VantButton>
 		</div>
 	</div>
 </template>
@@ -33,32 +33,40 @@ export default defineComponent({
 		const store = useStore()
 		const message = ref('')
 
-		const submitClientResponse = () => {
+		const sendClientResponse = () => {
 			const data = {
 				owner: 'client',
 				content: message.value
 			}
 			const dataToBeSended = {
-				status: store.state.status,
 				username: store.state.username,
 				context: message.value,
-				counter: store.state.counter
+				status: store.state.status,
+				counter: store.state.counter,
+				child_problem_index: store.state.selectedOption
 			}
-			axios.post('http://172.16.75.126:8000/send-message', dataToBeSended).then(
-				res => {
-					console.log(res.data)
-					store.state.history.push(data)
-					message.value = ''
-					store.state.history.push(res.data)
-					store.state.counter += 1
-				}
-			)
-			
+			if (message.value) {
+				axios.post('http://172.16.75.144:8000/send-message', dataToBeSended).then(
+					res => {
+						console.log(res.data)
+						store.state.history.push(data)
+						message.value = ''
+						store.state.history.push(res.data)
+						store.state.counter += 1
+						store.state.status = res.data.next_status
+						if (typeof(res.data.options) == 'string') {
+							store.state.selectedOption = res.data.options
+						} else {
+							store.state.selectedOption = ''
+						}
+					}
+				)
+			}
 		}
 		return {
 			store,
 			message,
-			submitClientResponse
+			sendClientResponse
 		}
 	}
 })

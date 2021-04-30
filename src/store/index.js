@@ -6,10 +6,10 @@ export default createStore({
     sendIsAvailable: true,
     predictLabel: -999,
     username: 'qiuhuachuan',
-    childProblem: null,
     labelName: null,
-    status: 'intake-interview',
-    counter: 1
+    counter: 1,
+    status: 'selection',
+    selectedOption: ''
 	},
 	getters: {},
 	mutations: {},
