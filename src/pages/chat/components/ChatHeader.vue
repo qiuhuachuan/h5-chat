@@ -3,21 +3,12 @@
 </template>
 
 <script>
-export default {
-
-}
+export default {}
 </script>
 
 <style lang="less" scoped>
 .chat-header {
-  height: 40px;
-	line-height: 40px;
-	text-align: center;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
+  font-size: 20px;
 	background-color: #eebf52;
-	z-index: 998;
 }
 </style>

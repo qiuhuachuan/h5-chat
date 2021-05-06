@@ -1,5 +1,4 @@
 <template>
-	<div class="chat-content" id="scrollWindow">
     <div class="chat-container">
       <div class="chatbot">
         <img :src="chatbotAvatar">
@@ -40,20 +39,20 @@
           </div>
         </div>
       </div>
+
       <div :class="item.owner" v-for="item of store.state.history" :key="item.id">
         <img :src="item.owner == 'chatbot' ? chatbotAvatar : clientAvatar">
         <div :class="item.owner == 'chatbot' ? 'chatbot-content' : 'client-content'">
           <div class="details">{{ item.question || item.content }}</div>
           <div v-if="item.options instanceof Object ? true : false">
-          <VantRadioGroup v-model="radioChecked" :disabled="item.isSelected" @click.once="selectOption(radioChecked, item)">
-            <VantRadio v-for="element of item.options" :name="element.key" :key="element.key" >{{ element.value }}</VantRadio>
-          </VantRadioGroup>
-        </div>
-        </div>
-        
+            <VantRadioGroup v-model="radioChecked" :disabled="item.isSelected" @click.once="selectOption(radioChecked, item)">
+              <VantRadio v-for="element of item.options" :name="element.key" :key="element.key" >{{ element.value }}</VantRadio>
+            </VantRadioGroup>
+          </div>
+        </div>        
       </div>
+
     </div>
-  </div>
 </template>
 
 <script>
@@ -140,85 +139,79 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.chat-content {
-  height: 100%;
-  overflow-y: hidden;
-  display: flex;
-  flex-direction: column;
-  .chat-container {
-    overflow-y: auto;
-    .chatbot {
+.chat-container {
+  height: inherit;
+  .chatbot {
+    display: flex;
+    flex-direction: row;
+    padding: 6px 30px 6px 6px;
+    img {
+      margin: 5px;
+      width: 40px;
+      height: 40px;
+      border-radius: 20px;
+    }
+    .chatbot-content {
       display: flex;
-      flex-direction: row;
-      padding: 6px 30px 6px 6px;
-      img {
+      flex-direction: column;
+      flex-grow: 1;
+      .details {
+        max-width: 260px;
         margin: 5px;
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
+        margin-right: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+        padding: 12px;
+        font-size: 14px;
+        text-align: left;
+        // flex: 1;
+        background-color: #fff;
+        border-top-right-radius: 16px;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
       }
-      .chatbot-content {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        .details {
-          max-width: 260px;
-          margin: 5px;
-          margin-right: auto;
-          white-space: pre-wrap;
-          word-break: break-all;
-          padding: 12px;
-          font-size: 14px;
-          text-align: left;
-          flex: 1;
-          background-color: #fff;
-          border-top-right-radius: 16px;
-          border-bottom-left-radius: 16px;
-          border-bottom-right-radius: 16px;
-        }
-        .text-title {
-          margin: 5px;
-          border-top-right-radius: 16px;
-          border-bottom-left-radius: 16px;
-          border-bottom-right-radius: 16px;
-          max-height: 60px;
-        }
-        .text-content {
-          margin: 5px;
-          border-top-right-radius: 16px;
-          border-bottom-left-radius: 16px;
-          border-bottom-right-radius: 16px;
-          max-height: 320px;
-        }
+      .text-title {
+        margin: 5px;
+        border-top-right-radius: 16px;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+        max-height: 60px;
+      }
+      .text-content {
+        margin: 5px;
+        border-top-right-radius: 16px;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+        max-height: 320px;
       }
     }
-    .client {
-      display: flex;
-      flex-direction: row-reverse;
-      img {
+  }
+  .client {
+    display: flex;
+    flex-direction: row-reverse;
+    img {
+      margin: 5px;
+      width: 40px;
+      height: 40px;
+      border-radius: 20px;
+    }
+    .client-content {
+      display: inline-flex;
+      flex-flow: column wrap;
+      div {
+        max-width: 250px;
         margin: 5px;
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
-      }
-      .client-content {
-        display: inline-flex;
-        flex-flow: column wrap;
-        div {
-          max-width: 250px;
-          margin: 5px;
-          margin-left: auto;
-          white-space: pre-wrap;
-          word-break: break-all;
-          padding: 12px;
-          font-size: 14px;
-          text-align: left;
-          flex: 1;
-          background-color: #59b269;
-          border-top-left-radius: 16px;
-          border-bottom-left-radius: 16px;
-          border-bottom-right-radius: 16px;
-        }
+        margin-left: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+        padding: 12px;
+        font-size: 14px;
+        text-align: left;
+        flex: 1;
+        background-color: #59b269;
+        border-top-left-radius: 16px;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
       }
     }
   }

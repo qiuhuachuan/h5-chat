@@ -79,7 +79,6 @@ export default defineComponent({
 		justify-content: space-between;
 		align-items: center;
 		.client-input {
-			flex: 1;
 			margin: 5px;
 			border-radius: 22px;
 			max-height: 100px;

@@ -192,3 +192,7 @@ a {
   color: #25a4bb;
   text-decoration: none;
 }
+
+html, body {
+  height: 100%;
+}
